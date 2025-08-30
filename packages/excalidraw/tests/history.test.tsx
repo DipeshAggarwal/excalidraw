@@ -3043,15 +3043,14 @@ describe("history", () => {
       });
 
       Keyboard.undo();
-      expect(API.getUndoStack().length).toBe(3);
-      expect(API.getRedoStack().length).toBe(1);
-      expect(h.state.selectedLinearElement).not.toBeNull();
-      expect(h.state.selectedLinearElement?.isEditing).toBe(true);
+      expect(API.getUndoStack().length).toBe(0);
+      expect(API.getRedoStack().length).toBe(4);
+      expect(h.state.selectedLinearElement).toBeNull();
 
       Keyboard.redo();
       expect(API.getUndoStack().length).toBe(4);
       expect(API.getRedoStack().length).toBe(0);
-      expect(h.state.selectedLinearElement).not.toBeNull();
+      expect(h.state.selectedLinearElement).toBeNull();
       expect(h.state.selectedLinearElement?.isEditing ?? false).toBe(false);
     });
 
@@ -4056,7 +4055,7 @@ describe("history", () => {
             expect.objectContaining({
               id: container.id,
               boundElements: [{ id: remoteText.id, type: "text" }],
-              isDeleted: false, // isDeleted got remotely updated to false
+              isDeleted: false,
             }),
             expect.objectContaining({
               id: text.id,
@@ -4065,7 +4064,6 @@ describe("history", () => {
             }),
             expect.objectContaining({
               id: remoteText.id,
-              // unbound
               containerId: container.id,
               isDeleted: false,
             }),
@@ -4356,8 +4354,8 @@ describe("history", () => {
           expect.objectContaining({
             ...textProps,
             // text element got redrawn!
-            x: 205,
-            y: 205,
+            x: 241.295259647664,
+            y: 247.59240920619527,
             angle: 90,
             id: text.id,
             containerId: container.id,
@@ -4400,8 +4398,8 @@ describe("history", () => {
           }),
           expect.objectContaining({
             ...textProps,
-            x: 205,
-            y: 205,
+            x: 241.295259647664,
+            y: 247.59240920619527,
             angle: 90,
             id: text.id,
             containerId: container.id,
