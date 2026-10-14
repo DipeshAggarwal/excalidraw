@@ -61,9 +61,11 @@ export type ActionName =
   | "objectsSnapMode"
   | "arrowBinding"
   | "midpointSnapping"
+  | "showHints"
   | "stats"
   | "changeStrokeColor"
   | "changeBackgroundColor"
+  | "changeBucketFillBackgroundColor"
   | "changeFillStyle"
   | "changeStrokeWidth"
   | "changeSloppiness"
@@ -139,6 +141,7 @@ export type ActionName =
   | "linkToElement"
   | "cropEditor"
   | "wrapSelectionInFrame"
+  | "toggleWrap"
   | "toggleShapeSwitch"
   | "togglePolygon";
 

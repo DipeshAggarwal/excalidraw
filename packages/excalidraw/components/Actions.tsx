@@ -94,31 +94,24 @@ const AlignFieldset = ({
   return (
     <fieldset>
       <legend>{t("labels.align")}</legend>
-      <div className="buttonList">
-        {isRTL ? (
-          <>
-            {renderAction("alignRight")}
-            {renderAction("alignHorizontallyCentered")}
-            {renderAction("alignLeft")}
-          </>
-        ) : (
-          <>
-            {renderAction("alignLeft")}
-            {renderAction("alignHorizontallyCentered")}
-            {renderAction("alignRight")}
-          </>
-        )}
-        {showDistribute && renderAction("distributeHorizontally")}
-        {/* breaks the row ˇˇ */}
-        <div style={{ flexBasis: "100%", height: 0 }} />
-        <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            gap: ".5rem",
-            marginTop: "-0.5rem",
-          }}
-        >
+      <div className="buttonList align-buttons">
+        <div className="align-buttons__row">
+          {isRTL ? (
+            <>
+              {renderAction("alignRight")}
+              {renderAction("alignHorizontallyCentered")}
+              {renderAction("alignLeft")}
+            </>
+          ) : (
+            <>
+              {renderAction("alignLeft")}
+              {renderAction("alignHorizontallyCentered")}
+              {renderAction("alignRight")}
+            </>
+          )}
+          {showDistribute && renderAction("distributeHorizontally")}
+        </div>
+        <div className="align-buttons__row">
           {renderAction("alignTop")}
           {renderAction("alignVerticallyCentered")}
           {renderAction("alignBottom")}
@@ -151,6 +144,18 @@ export const SelectedShapeActions = ({
     elementsMap,
     app,
   );
+
+  // the bucket fill tool configures only the fill it creates: color, fill
+  // style, and opacity (shared `currentItem*` values; no stroke properties)
+  if (appState.activeTool.type === "bucketfill") {
+    return (
+      <div className="selected-shape-actions">
+        <div>{renderAction("changeBucketFillBackgroundColor")}</div>
+        {renderAction("changeFillStyle")}
+        {renderAction("changeOpacity")}
+      </div>
+    );
+  }
 
   return (
     <div className="selected-shape-actions">
@@ -408,7 +413,9 @@ const CombinedTextProperties = ({
   predicates: ShapeActionPredicates;
   container: HTMLDivElement | null;
 }) => {
-  const { saveCaretPosition, restoreCaretPosition } = useTextEditorFocus();
+  const { saveCaretPosition, restoreCaretPosition } = useTextEditorFocus(
+    container?.ownerDocument,
+  );
   const isOpen = appState.openPopup === "compactTextProperties";
 
   return (
@@ -626,10 +633,14 @@ export const CompactShapeActions = ({
         </div>
       )}
 
-      {/* Background Color */}
+      {/* Background Color (the bucket fill variant excludes `transparent`) */}
       {predicates.backgroundColor && (
         <div className="compact-action-item">
-          {renderAction("changeBackgroundColor")}
+          {renderAction(
+            appState.activeTool.type === "bucketfill"
+              ? "changeBucketFillBackgroundColor"
+              : "changeBackgroundColor",
+          )}
         </div>
       )}
 
@@ -780,9 +791,14 @@ export const MobileShapeActions = ({
             {renderAction("changeStrokeColor")}
           </div>
         )}
+        {/* Background Color (the bucket fill variant excludes `transparent`) */}
         {predicates.backgroundColor && (
           <div className="compact-action-item">
-            {renderAction("changeBackgroundColor")}
+            {renderAction(
+              appState.activeTool.type === "bucketfill"
+                ? "changeBucketFillBackgroundColor"
+                : "changeBackgroundColor",
+            )}
           </div>
         )}
         <CombinedShapeProperties
@@ -881,10 +897,14 @@ export const UndoRedoActions = ({
 }) => (
   <div className={`undo-redo-buttons ${className}`}>
     <div className="undo-button-container">
-      <Tooltip label={t("buttons.undo")}>{renderAction("undo")}</Tooltip>
+      <Tooltip label={t("buttons.undo")} delay>
+        {renderAction("undo")}
+      </Tooltip>
     </div>
     <div className="redo-button-container">
-      <Tooltip label={t("buttons.redo")}> {renderAction("redo")}</Tooltip>
+      <Tooltip label={t("buttons.redo")} delay>
+        {renderAction("redo")}
+      </Tooltip>
     </div>
   </div>
 );

@@ -24,10 +24,12 @@ import {
   ImageIcon,
   EraserIcon,
   laserPointerToolIcon,
+  bucketFillIcon,
   LassoIcon,
   handIcon,
   frameToolIcon,
   EmbedIcon,
+  stickyNoteToolIcon,
 } from "./icons";
 
 import type {
@@ -39,7 +41,7 @@ import type {
 
 export type ToolConfig = {
   icon: React.ReactNode;
-  /** letter shortcut(s) — the first one is shown in tooltips */
+  /** letter shortcut(s) — the first one is shown in tooltips and badges */
   letterKey?: string | readonly string[];
   /** whether `letterKey` requires Shift to be held (e.g. Shift+X) */
   shiftKey?: boolean;
@@ -116,6 +118,10 @@ export const TOOLS = defineTools({
     letterKey: KEYS.T,
     numericKey: KEYS["8"],
   },
+  stickynote: {
+    icon: stickyNoteToolIcon,
+    letterKey: KEYS.N,
+  },
   image: {
     icon: ImageIcon,
     numericKey: KEYS["9"],
@@ -142,6 +148,10 @@ export const TOOLS = defineTools({
   laser: {
     icon: laserPointerToolIcon,
     letterKey: KEYS.K,
+  },
+  bucketfill: {
+    icon: bucketFillIcon,
+    letterKey: KEYS.B,
   },
   lasso: {
     icon: LassoIcon,
@@ -281,11 +291,16 @@ const createToolButton = (
         keyBindingLabel={
           hideKeyBinding || hideShortcut
             ? undefined
-            : TOOLS[shortcutType].numericKey || getToolLetter(shortcutType)
+            : getToolLetter(shortcutType) || TOOLS[shortcutType].numericKey
         }
         aria-label={label}
         aria-keyshortcuts={shortcut ?? undefined}
         data-testid={`toolbar-${type}`}
+        onPointerDown={(event) => {
+          // a draggable tool can be dragged out onto the canvas; a press that
+          // stays put is still a click (`onSelect`)
+          app.toolDrag.handleButtonPointerDown(type, event.nativeEvent);
+        }}
         onSelect={({ pointerType }) => {
           if (!app.state.penDetected && pointerType === "pen") {
             app.togglePenMode(true);
@@ -318,6 +333,7 @@ export const ArrowToolButton = createToolButton("arrow");
 export const LineToolButton = createToolButton("line");
 export const FreedrawToolButton = createToolButton("freedraw");
 export const TextToolButton = createToolButton("text");
+export const StickyNoteToolButton = createToolButton("stickynote");
 export const ImageToolButton = createToolButton("image");
 export const EraserToolButton = createToolButton("eraser");
 export const FrameToolButton = createToolButton("frame");

@@ -2,7 +2,6 @@ import {
   getElementsInGroup,
   isSomeElementSelected,
   makeNextSelectedElementIds,
-  selectGroupsForSelectedElements,
 } from "@excalidraw/element";
 import { CaptureUpdateAction } from "@excalidraw/element";
 import { KEYS, isWritableElement, updateActiveTool } from "@excalidraw/common";
@@ -10,6 +9,8 @@ import { KEYS, isWritableElement, updateActiveTool } from "@excalidraw/common";
 import type { GroupId } from "@excalidraw/element/types";
 
 import { TOGGLE_TOOLS } from "../components/Tools";
+
+import { selectGroupsForSelectedElements } from "../components/App.selection";
 
 import { register } from "./register";
 
@@ -67,6 +68,7 @@ export const actionDeselect = register({
   trackEvent: false,
   perform: (_elements, appState, _, app) => {
     const activeTool = getNextActiveTool(appState, app);
+    app.cursor.applyForTool(activeTool);
 
     if (appState.editingGroupId) {
       const nonDeletedElements = app.scene.getNonDeletedElements();
@@ -103,7 +105,6 @@ export const actionDeselect = register({
           selectionElement: null,
           showHyperlinkPopup: false,
           suggestedBinding: null,
-          hoveredArrowTextAnchor: null,
           frameToHighlight: null,
         },
         captureUpdate: CaptureUpdateAction.IMMEDIATELY,
@@ -122,7 +123,6 @@ export const actionDeselect = register({
         selectionElement: null,
         showHyperlinkPopup: false,
         suggestedBinding: null,
-        hoveredArrowTextAnchor: null,
         frameToHighlight: null,
       },
       captureUpdate: CaptureUpdateAction.IMMEDIATELY,
